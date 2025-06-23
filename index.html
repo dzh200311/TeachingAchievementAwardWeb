@@ -3,108 +3,765 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>XX学院教学成果奖申报展示</title>
+    <title>青岛科技大学经济与管理学院 - 教学成果奖申报展示</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --primary: #2563eb;
+            --primary-light: #3b82f6;
+            --primary-dark: #1d4ed8;
+            --secondary: #8b5cf6;
+            --accent: #06b6d4;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+            color: #1f2937;
+            overflow-x: hidden;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            height: 100vh;
+            clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            transform: rotate(30deg);
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .card::before {
+            content: "";
+            position: absolute;
+            top: -100%;
+            left: -100%;
+            width: 300%;
+            height: 300%;
+            background: radial-gradient(circle, rgba(59,130,246,0.05) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .section-title {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 2rem;
+        }
+
+        .section-title::after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .attachment-card {
+            transition: all 0.3s ease;
+            border-left: 4px solid var(--primary);
+        }
+
+        .attachment-card:hover {
+            transform: translateX(8px);
+            background-color: #f0f7ff;
+        }
+
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .animate-pulse-slow {
+            animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .stat-number {
+            position: relative;
+            display: inline-block;
+        }
+
+        .stat-number::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 10px;
+            background: rgba(59, 130, 246, 0.2);
+            z-index: -1;
+        }
+    </style>
 </head>
-<body class="bg-gray-50">
+<body>
+
 <!-- 导航栏 -->
-<nav class="bg-white shadow-lg">
-    <div class="max-w-7xl mx-auto px-4">
-        <div class="flex justify-between items-center h-16">
-            <div class="flex items-center">
-                <span class="text-2xl font-bold text-blue-600">XX学院</span>
+<nav class="fixed w-full z-50 glass py-3 transition-all duration-300" data-aos="fade-down">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center">
+                    <i class="fas fa-graduation-cap text-white text-xl"></i>
+                </div>
+                <span class="text-xl font-bold text-white">经济与管理学院</span>
             </div>
             <a href="https://college-website.com"
-               class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                返回学院官网
+               class="bg-white/10 text-white px-5 py-2.5 rounded-full hover:bg-white/20 transition-all flex items-center">
+                <span>返回官网</span>
+                <i class="fas fa-arrow-right ml-2 text-sm"></i>
             </a>
         </div>
     </div>
 </nav>
 
-<!-- 主内容区 -->
-<main class="max-w-7xl mx-auto px-4 py-8">
-    <!-- 成果标题 -->
-    <div class="bg-blue-600 text-white p-8 rounded-xl mb-8">
-        <h1 class="text-4xl font-bold mb-4">"XXX"教学成果奖申报展示</h1>
-        <p class="text-xl">创新人才培养模式 深化教育教学改革</p>
+<!-- Hero Section -->
+<section class="hero flex items-center justify-center text-center relative">
+    <div class="max-w-6xl px-4 z-10" data-aos="zoom-in">
+        <div class="inline-block bg-white/10 backdrop-blur-sm rounded-full px-6 py-2 mb-6 animate-pulse-slow">
+            <span class="text-blue-100 text-lg">2023年教学成果奖申报</span>
+        </div>
+        <h1 class="text-5xl md:text-7xl font-bold mb-6 leading-tight text-white">
+            <span class="inline-block animate-float" style="animation-delay: 0.2s;">创新</span>
+            <span class="inline-block animate-float" style="animation-delay: 0.4s;">融合</span>
+            <span class="inline-block animate-float" style="animation-delay: 0.6s;">卓越</span>
+        </h1>
+        <p class="text-xl md:text-2xl text-blue-100 max-w-3xl mx-auto leading-relaxed">
+            经济与管理学院教学改革成果展示：构建新时代人才培养体系，推动教育高质量发展
+        </p>
+        <div class="mt-10">
+            <a href="#achievements" class="inline-flex items-center px-8 py-3.5 bg-white text-blue-600 rounded-full text-lg font-medium hover:bg-blue-50 transition-all shadow-lg">
+                探索成果
+                <i class="fas fa-arrow-down ml-3 animate-bounce"></i>
+            </a>
+        </div>
     </div>
 
-    <!-- 内容网格布局 -->
-    <div class="grid md:grid-cols-2 gap-8">
+    <!-- 浮动元素 -->
+    <div class="absolute top-20 left-10 w-40 h-40 rounded-full bg-blue-400/20 blur-3xl animate-float"></div>
+    <div class="absolute bottom-40 right-10 w-60 h-60 rounded-full bg-purple-400/20 blur-3xl animate-float" style="animation-delay: 2s;"></div>
+</section>
+
+<!-- 主要内容区 -->
+<main class="max-w-7xl mx-auto px-4 py-16">
+    <div class="text-center mb-16" data-aos="fade-up">
+        <h2 class="section-title text-3xl md:text-4xl font-bold text-gray-800">教学成果展示</h2>
+        <p class="text-gray-600 max-w-2xl mx-auto mt-4 text-lg">
+            经过多年探索与实践，我院在教育教学改革方面取得了一系列突破性成果
+        </p>
+    </div>
+
+    <div class="grid lg:grid-cols-2 gap-12">
         <!-- 左侧内容 -->
-        <div class="space-y-8">
+        <div class="space-y-12">
             <!-- 成果简介 -->
-            <div class="bg-white p-6 rounded-xl shadow-md">
-                <h2 class="text-2xl font-bold text-blue-600 mb-4">成果简介</h2>
-                <p class="text-gray-600 leading-relaxed">
-                    这里填写成果的主要内容，包括解决的教学问题、创新点、推广应用效果等...
+            <div class="card p-8" data-aos="fade-right">
+                <h2 class="text-3xl font-bold text-blue-600 mb-6">成果简介</h2>
+                <p class="text-gray-600 leading-relaxed text-lg mb-6">
+                    本成果以"立德树人"为根本任务，聚焦新时代经济管理人才培养，构建了"三维一体"人才培养新模式。通过课程体系重构、教学方法创新和实践平台升级，有效解决了传统教学中理论与实践脱节、创新能力培养不足等问题。
                 </p>
-            </div>
-
-            <!-- 创新特色 -->
-            <div class="bg-white p-6 rounded-xl shadow-md">
-                <h2 class="text-2xl font-bold text-blue-600 mb-4">主要创新点</h2>
-                <ul class="list-disc pl-6 space-y-3 text-gray-600">
-                    <li>创新点1描述...</li>
-                    <li>创新点2描述...</li>
-                    <li>创新点3描述...</li>
-                </ul>
-            </div>
-
-            <!-- 应用效果 -->
-            <div class="bg-white p-6 rounded-xl shadow-md">
-                <h2 class="text-2xl font-bold text-blue-600 mb-4">应用推广情况</h2>
                 <div class="grid grid-cols-2 gap-4">
-                    <div class="text-center">
-                        <div class="text-3xl font-bold text-blue-600">XX+</div>
-                        <div class="text-gray-500">受益学生数</div>
+                    <div class="bg-blue-50 rounded-xl p-5">
+                        <div class="text-2xl font-bold text-blue-600 mb-2">2018</div>
+                        <div class="text-gray-600">项目启动年</div>
                     </div>
-                    <div class="text-center">
-                        <div class="text-3xl font-bold text-blue-600">XX+</div>
-                        <div class="text-gray-500">推广应用院校</div>
+                    <div class="bg-blue-50 rounded-xl p-5">
+                        <div class="text-2xl font-bold text-blue-600 mb-2">12</div>
+                        <div class="text-gray-600">核心团队成员</div>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- 右侧内容 -->
-        <div class="space-y-8">
-            <!-- 成果展示 -->
-            <div class="bg-white p-6 rounded-xl shadow-md">
-                <h2 class="text-2xl font-bold text-blue-600 mb-4">成果展示</h2>
-                <img src="achievement-photo.jpg" alt="成果展示" class="rounded-lg mb-4">
-                <div class="aspect-w-16 aspect-h-9">
-                    <iframe src="https://player.youku.com/embed/XXX"
-                            class="w-full h-full rounded-lg"
-                            frameborder="0"
-                            allowfullscreen></iframe>
-                </div>
-            </div>
+        <div class="space-y-12">
 
-            <!-- 附件下载 -->
-            <div class="bg-white p-6 rounded-xl shadow-md">
-                <h2 class="text-2xl font-bold text-blue-600 mb-4">相关材料</h2>
-                <div class="space-y-2">
-                    <a href="#" class="flex items-center p-3 hover:bg-gray-50 rounded-lg">
-                        <svg class="w-6 h-6 text-blue-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                        </svg>
-                        <span class="text-gray-600">教学成果报告书.pdf</span>
-                    </a>
-                    <!-- 更多附件... -->
+            <!-- 创新特色 -->
+            <div class="card p-8" data-aos="fade-right" data-aos-delay="100">
+                <h2 class="text-3xl font-bold text-blue-600 mb-6">创新特色</h2>
+                <div class="space-y-8">
+                    <div class="flex items-start">
+                        <div class="feature-icon text-2xl">
+                            <i class="fas fa-lightbulb w-full h-full flex items-center justify-center"></i>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="text-xl font-semibold mb-3">教学模式创新</h3>
+                            <p class="text-gray-600">首创"理论-案例-实践"三位一体教学模式，实现知识传授与能力培养的有机融合。</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <div class="feature-icon text-2xl">
+                            <i class="fas fa-network-wired w-full h-full flex items-center justify-center"></i>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="text-xl font-semibold mb-3">校企协同育人</h3>
+                            <p class="text-gray-600">与30余家知名企业共建实践基地，形成产教融合的协同育人新机制。</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <div class="feature-icon text-2xl">
+                            <i class="fas fa-globe w-full h-full flex items-center justify-center"></i>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="text-xl font-semibold mb-3">国际化培养</h3>
+                            <p class="text-gray-600">引入国际前沿课程体系，建立海外实践基地，培养学生全球胜任力。</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</main>
 
+    <section class="max-w-7xl mx-auto px-4 py-20 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl my-20"  id="achievements">
+        <div class="text-center mb-16" data-aos="fade-up">
+            <h2 class="section-title text-3xl md:text-4xl font-bold text-gray-800">成果评价材料</h2>
+            <p class="text-gray-600 max-w-2xl mx-auto mt-4 text-lg">
+                来自多方的评价证明及研究成果充分印证了本成果的创新价值与推广意义
+            </p>
+        </div>
+
+        <div class="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
+            <!-- 用人单位评价证明 -->
+            <div class="break-inside-avoid card" data-aos="fade-up">
+                <div class="p-8">
+                    <div class="w-16 h-16 bg-blue-100 rounded-xl flex items-center justify-center mb-6">
+                        <i class="fas fa-building text-blue-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">用人单位评价证明</h3>
+                    <p class="text-gray-600 mb-6">来自合作企业的评价证明了我们培养学生与实际岗位需求的高度契合。</p>
+
+                    <div class="space-y-4">
+
+                        <a href="asset/enterprise/企业采纳评价证明-东莞美易.jpg" target="_blank" class="attachment-card p-4 rounded-lg bg-white block relative z-10">
+                            <div class="flex items-start">
+                                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-file-image text-blue-600"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <div class="font-medium">企业采纳评价证明-东莞美易</div>
+                                    <div class="text-sm text-gray-500 mt-1">JPG图像</div>
+                                </div>
+                            </div>
+                        </a>
+                        <a href="asset/enterprise/用人单位评价证明-东莞美易.jpg" target="_blank" class="attachment-card p-4 rounded-lg bg-white block relative z-10">
+                            <div class="flex items-start">
+                                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-file-image text-blue-600"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <div class="font-medium">用人单位评价证明-东莞美易</div>
+                                    <div class="text-sm text-gray-500 mt-1">JPG图像</div>
+                                </div>
+                            </div>
+                        </a>
+                        <a href="asset/enterprise/用人单位证明自和堂.jpg" target="_blank" class="attachment-card p-4 rounded-lg bg-white block relative z-10">
+                            <div class="flex items-start">
+                                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-file-image text-blue-600"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <div class="font-medium">用人单位证明-自和堂</div>
+                                    <div class="text-sm text-gray-500 mt-1">JPG图像</div>
+                                </div>
+                            </div>
+                        </a>
+                        <a href="asset/enterprise/用人单位证明（运盛纺织）(1).pdf" target="_blank" class="attachment-card p-4 rounded-lg bg-white block relative z-10">
+                            <div class="flex items-start">
+                                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-file-pdf text-blue-600"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <div class="font-medium">用人单位证明-运盛纺织</div>
+                                    <div class="text-sm text-gray-500 mt-1">PDF文档</div>
+                                </div>
+                            </div>
+                        </a>
+                        <a href="asset/enterprise/青岛创客企业管理有限公司.pdf" target="_blank" class="attachment-card p-4 rounded-lg bg-white block relative z-10">
+                            <div class="flex items-start">
+                                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-file-pdf text-blue-600"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <div class="font-medium">青岛创客企业管理有限公司</div>
+                                    <div class="text-sm text-gray-500 mt-1">PDF文档</div>
+                                </div>
+                            </div>
+                        </a>
+                        <a href="asset/enterprise/青岛喜冠商贸有限公司.pdf" target="_blank" class="attachment-card p-4 rounded-lg bg-white block relative z-10">
+                            <div class="flex items-start">
+                                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-file-pdf text-blue-600"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <div class="font-medium">青岛喜冠商贸有限公司</div>
+                                    <div class="text-sm text-gray-500 mt-1">PDF文档</div>
+                                </div>
+                            </div>
+                        </a>
+                        <a href="asset/enterprise/青岛喜领数字科技有限公司.pdf" target="_blank" class="attachment-card p-4 rounded-lg bg-white block relative z-10">
+                            <div class="flex items-start">
+                                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-file-pdf text-blue-600"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <div class="font-medium">青岛喜领数字科技有限公司</div>
+                                    <div class="text-sm text-gray-500 mt-1">PDF文档</div>
+                                </div>
+                            </div>
+                        </a>
+                        <a href="asset/enterprise/青岛帝虎电子商务有限公司.pdf" target="_blank" class="attachment-card p-4 rounded-lg bg-white block relative z-10">
+                            <div class="flex items-start">
+                                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-file-pdf text-blue-600"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <div class="font-medium">青岛帝虎电子商务有限公司</div>
+                                    <div class="text-sm text-gray-500 mt-1">PDF文档</div>
+                                </div>
+                            </div>
+                        </a>
+                        <a href="asset/enterprise/青岛舒扬信息科技有限公司.pdf" target="_blank" class="attachment-card p-4 rounded-lg bg-white block relative z-10">
+                            <div class="flex items-start">
+                                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-file-pdf text-blue-600"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <div class="font-medium">青岛舒扬信息科技有限公司</div>
+                                    <div class="text-sm text-gray-500 mt-1">PDF文档</div>
+                                </div>
+                            </div>
+                        </a>
+                        <a href="asset/enterprise/青岛艺福顺商贸有限公司.pdf" target="_blank" class="attachment-card p-4 rounded-lg bg-white block relative z-10">
+                            <div class="flex items-start">
+                                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-file-pdf text-blue-600"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <div class="font-medium">青岛艺福顺商贸有限公司</div>
+                                    <div class="text-sm text-gray-500 mt-1">PDF文档</div>
+                                </div>
+                            </div>
+                        </a>
+                        <a href="asset/enterprise/青岛集妍堂电子商务有限公司.pdf" target="_blank" class="attachment-card p-4 rounded-lg bg-white block relative z-10">
+                            <div class="flex items-start">
+                                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-file-pdf text-blue-600"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <div class="font-medium">青岛集妍堂电子商务有限公司</div>
+                                    <div class="text-sm text-gray-500 mt-1">PDF文档</div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 教指委专家评价 -->
+            <div class="break-inside-avoid card" data-aos="fade-up" data-aos-delay="100">
+                <div class="p-8">
+                    <div class="w-16 h-16 bg-blue-100 rounded-xl flex items-center justify-center mb-6">
+                        <i class="fas fa-user-graduate text-blue-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">教指委专家评价</h3>
+                    <p class="text-gray-600 mb-6">教育部教学指导委员会专家对本成果的创新性和示范性给予的评价。</p>
+
+                    <div class="space-y-4">
+                        <a href="asset/proReview/专家评价意见表-王京滨(1).pdf" target="_blank" class="attachment-card p-4 rounded-lg bg-white block relative z-10">
+                            <div class="flex items-start">
+                                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-file-pdf text-blue-600"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <div class="font-medium">专家评审意见表 - 王京滨</div>
+                                    <div class="text-sm text-gray-500 mt-1">PDF文档</div>
+                                </div>
+                            </div>
+                        </a>
+                        <a href="asset/proReview/专家评价意见表-葛京(1).pdf" target="_blank" class="attachment-card p-4 rounded-lg bg-white block relative z-10">
+                            <div class="flex items-start">
+                                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-file-pdf text-blue-600"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <div class="font-medium">专家评审意见表 - 葛京</div>
+                                    <div class="text-sm text-gray-500 mt-1">PDF文档</div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 教学论文论著 -->
+            <div class="break-inside-avoid card" data-aos="fade-up" data-aos-delay="200">
+                <div class="p-8">
+                    <div class="w-16 h-16 bg-blue-100 rounded-xl flex items-center justify-center mb-6">
+                        <i class="fas fa-book-open text-blue-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">教学论文论著</h3>
+                    <p class="text-gray-600 mb-6">围绕本成果发表的高水平教研论文及论著。</p>
+
+                    <div class="space-y-4">
+                        <a href="asset/paper/附件4-教研论文：数字经济时代工商管理专业人才能力需求的数据挖掘分析_董华.pdf" target="_blank" class="attachment-card p-4 rounded-lg bg-white block relative z-10">
+                            <div class="flex items-start">
+                                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-file-pdf text-blue-600"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <div class="font-medium">数字经济时代人才能力需求分析</div>
+                                    <div class="text-sm text-gray-500 mt-1">PDF文档</div>
+                                </div>
+                            </div>
+                        </a>
+
+                        <a href="asset/paper/附件5-教研论文：数字经济时代工商管理专业人...-B-S-P能力模型的构建_董华.pdf" target="_blank" class="attachment-card p-4 rounded-lg bg-white block relative z-10">
+                            <div class="flex items-start">
+                                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-file-pdf text-blue-600"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <div class="font-medium">B-S-P能力模型构建研究</div>
+                                    <div class="text-sm text-gray-500 mt-1">PDF文档</div>
+                                </div>
+                            </div>
+                        </a>
+
+                        <a href="asset/paper/附件6-教研论文：数字经济时代工商管理专业人才能力的调查与模糊综合评价_董华.pdf" target="_blank" class="attachment-card p-4 rounded-lg bg-white block relative z-10">
+                            <div class="flex items-start">
+                                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-file-pdf text-blue-600"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <div class="font-medium">模糊综合评价分析</div>
+                                    <div class="text-sm text-gray-500 mt-1">PDF文档</div>
+                                </div>
+                            </div>
+                        </a>
+
+                        <a href="asset/paper/附件7-教研论文：高校教师工作满意度的调查与...基于不同类型教师的对比分析_董华.pdf" target="_blank" class="attachment-card p-4 rounded-lg bg-white block relative z-10">
+                            <div class="flex items-start">
+                                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-file-pdf text-blue-600"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <div class="font-medium">高校教师满意度分析</div>
+                                    <div class="text-sm text-gray-500 mt-1">PDF文档</div>
+                                </div>
+                            </div>
+                        </a>
+
+                        <a href="asset/paper/附件8-教研论著：基于“B-S-P”层级工商管理类本科专业能力培养路径与实践教学体系研究-董华.pdf" target="_blank" class="attachment-card p-4 rounded-lg bg-white block relative z-10">
+                            <div class="flex items-start">
+                                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-file-pdf text-blue-600"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <div class="font-medium">B-S-P路径与教学体系研究</div>
+                                    <div class="text-sm text-gray-500 mt-1">PDF文档</div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- 省教改意见 -->
+            <div class="break-inside-avoid card" data-aos="fade-up" data-aos-delay="200">
+                <div class="p-8">
+                    <div class="w-16 h-16 bg-blue-100 rounded-xl flex items-center justify-center mb-6">
+                        <i class="fas fa-book-open text-blue-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">省教改重点项目鉴定意见</h3>
+                    <p class="text-gray-600 mb-6">省教改重点项目对本成果的鉴定意见。</p>
+
+                    <div class="space-y-4">
+                        <a href="asset/shengjiaogai/省教改重点项目鉴定意见（Z2020068）.pdf" target="_blank" class="attachment-card p-4 rounded-lg bg-white block relative z-10">
+                            <div class="flex items-start">
+                                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-file-pdf text-blue-600"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <div class="font-medium">省教改重点项目鉴定意见（Z2020068）</div>
+                                    <div class="text-sm text-gray-500 mt-1">PDF文档</div>
+                                </div>
+                            </div>
+                        </a>
+
+                        <a href="asset/shengjiaogai/省教改重点项目鉴定意见（Z2022226）.pdf" target="_blank" class="attachment-card p-4 rounded-lg bg-white block relative z-10">
+                            <div class="flex items-start">
+                                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-file-pdf text-blue-600"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <div class="font-medium">省教改重点项目鉴定意见（Z2022226）</div>
+                                    <div class="text-sm text-gray-500 mt-1">PDF文档</div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- 媒体报道 Section -->
+        <!-- 媒体报道 Section -->
+        <section class="mt-16">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-10">
+                    <h2 class="text-3xl font-bold text-gray-800">媒体报道</h2>
+                    <p class="mt-2 text-gray-600">以下是主流媒体对本成果的报道页面预览</p>
+                </div>
+
+                <!-- 媒体卡片 1 -->
+                <div class="card overflow-hidden mb-10">
+                    <div class="p-6 border-b text-lg font-semibold text-gray-700 bg-white">
+                        中国教育报报道：聚焦数字化转型，培养新商科管理人才
+                    </div>
+                    <iframe
+                            src="https://share.app3.jyb.cn/paper_d/82cd1c7fd8621901085fbbd9d582140e?from=VjZDc29lWmRlREZnUWRtcXVVam1CRDJxSjhMTzdSaytYSnVqN3hNbGl4UHA2QjlXSXM2aG5TNWJSQ3ZGckdkUw=="
+                            class="w-full h-[600px] border-0"
+                            loading="lazy"
+                            allowfullscreen></iframe>
+                </div>
+
+                <!-- 媒体卡片 2 -->
+                <div class="card overflow-hidden mb-10">
+                    <div class="p-6 border-b text-lg font-semibold text-gray-700 bg-white">
+                        齐鲁网报道
+                    </div>
+                    <iframe
+                            src="https://news.iqilu.com/yangmei/20250409/5798288.shtml"
+                            class="w-full h-[600px] border-0"
+                            loading="lazy"
+                            allowfullscreen></iframe>
+                </div>
+
+                <!-- 如有更多媒体报道继续添加 -->
+            </div>
+        </section>
+
+
+    </section>
+</main>
 <!-- 页脚 -->
-<footer class="bg-gray-800 text-white mt-12 py-6">
-    <div class="max-w-7xl mx-auto px-4 text-center">
-        <p>© 2023 XX学院 版权所有</p>
-        <p class="mt-2">联系电话：XXX-XXXXXXX 邮箱：contact@college.com</p>
+<footer class="bg-gray-900 text-gray-300 py-20 mt-10">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="grid md:grid-cols-2 gap-12">
+            <div>
+                <div class="text-3xl font-bold text-white mb-6">青岛科技大学经济与管理学院</div>
+                <p class="max-w-md text-lg mb-8">
+                    致力于培养具有国际视野、创新精神和实践能力的经济管理人才，服务区域经济社会发展。
+                </p>
+                <div class="flex space-x-4">
+                    <a href="#" class="w-12 h-12 rounded-full bg-gray-800 flex items-center justify-center hover:bg-blue-600 transition-colors">
+                        <i class="fab fa-weixin"></i>
+                    </a>
+                    <a href="#" class="w-12 h-12 rounded-full bg-gray-800 flex items-center justify-center hover:bg-blue-600 transition-colors">
+                        <i class="fab fa-weibo"></i>
+                    </a>
+                    <a href="#" class="w-12 h-12 rounded-full bg-gray-800 flex items-center justify-center hover:bg-blue-600 transition-colors">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-8">
+                <div>
+                    <h4 class="text-lg font-semibold text-white mb-4">联系方式</h4>
+                    <ul class="space-y-3">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt mt-1 mr-3 text-blue-400"></i>
+                            <span>山东省青岛市松岭路99号</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-phone mt-1 mr-3 text-blue-400"></i>
+                            <span>0532-88881234</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-envelope mt-1 mr-3 text-blue-400"></i>
+                            <span>contact@qust.edu.cn</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-lg font-semibold text-white mb-4">相关链接</h4>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="hover:text-white transition-colors">学院官网</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">教学成果库</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">教师发展中心</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">学生创新平台</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="border-t border-gray-800 mt-16 pt-8 text-center text-sm">
+            <p>© 2023 青岛科技大学经济与管理学院 版权所有</p>
+            <p class="mt-2">鲁ICP备12345678号</p>
+        </div>
     </div>
 </footer>
+
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    // 初始化AOS动画库
+    AOS.init({
+        duration: 1000,
+        once: true,
+        easing: 'ease-out-quart'
+    });
+
+    // 图表初始化
+    const ctx = document.getElementById('statChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['2018', '2019', '2020', '2021', '2022', '2023'],
+            datasets: [{
+                label: '受益学生数',
+                data: [600, 900, 1200, 1500, 1800, 2000],
+                backgroundColor: 'rgba(59, 130, 246, 0.8)',
+                borderColor: 'rgba(59, 130, 246, 1)',
+                borderWidth: 0,
+                borderRadius: 8
+            }, {
+                label: '合作院校',
+                data: [15, 22, 30, 38, 45, 52],
+                backgroundColor: 'rgba(139, 92, 246, 0.8)',
+                borderColor: 'rgba(139, 92, 246, 1)',
+                borderWidth: 0,
+                borderRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: {
+                        font: {
+                            size: 14,
+                            family: "'Inter', sans-serif"
+                        },
+                        padding: 20
+                    }
+                }
+            },
+            animation: {
+                duration: 2000,
+                easing: 'easeOutQuart'
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(0,0,0,0.05)'
+                    },
+                    ticks: {
+                        font: {
+                            family: "'Inter', sans-serif"
+                        }
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        font: {
+                            family: "'Inter', sans-serif"
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // 导航栏滚动效果
+    window.addEventListener('scroll', () => {
+        const nav = document.querySelector('nav');
+        if (window.scrollY > 50) {
+            nav.classList.add('bg-white/20', 'py-2', 'shadow-lg');
+        } else {
+            nav.classList.remove('bg-white/20', 'py-2', 'shadow-lg');
+        }
+    });
+
+    // 浮动元素动画
+    document.querySelectorAll('.animate-float').forEach((el, index) => {
+        el.style.animationDelay = `${index * 0.2}s`;
+    });
+
+
+
+</script>
 </body>
 </html>
