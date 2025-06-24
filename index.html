@@ -480,7 +480,7 @@
         </div>
     </div>
     <div class="mt-16 card p-8" data-aos="fade-left">
-        <h2 class="text-3xl font-bold text-blue-600 mb-6">三阶能力模型三维结构</h2>
+        <h2 class="text-3xl font-bold text-blue-600 mb-6">"V-D-B-S-P"能力培养模型</h2>
         <div id="pyramid-container">
             <canvas id="pyramid-canvas"></canvas>
             <div class="pyramid-legend">
@@ -511,6 +511,7 @@
             </div>
         </div>
         <div class="mt-6 text-gray-600 text-sm">
+            <h3>点击金字塔层级查看详情</h3>
             <p>成果面向数字经济新需求，在传统“B-S-P”三阶能力模型基础上（曾获第八届省教学成果二等奖），拓展“D-数字化”新维度（共24项数字化管理能力），确立“V-价值引领”核心中轴，构建起“V-D-B-S-P”数字经济时代三阶能力新模型。</p>
         </div>
     </div>
@@ -1213,7 +1214,7 @@
         scene.add(vAxis);
 
         // B层（基础层）
-        const bLayer = createPyramidLayer(5, 4.5, layerHeight, 0, layerData.b.color);
+        const bLayer = createPyramidLayer(5, 3.33, layerHeight, 0, layerData.b.color);
         scene.add(bLayer);
         pyramidLayers.push(bLayer);
 
@@ -1221,7 +1222,7 @@
         createLayerLabel('D-B', 0, layerHeight/2, 5, layerData.b.color);
 
         // S层（服务层）
-        const sLayer = createPyramidLayer(4.5, 3, layerHeight, layerHeight, layerData.s.color);
+        const sLayer = createPyramidLayer(3.33, 1.67, layerHeight, layerHeight, layerData.s.color);
         scene.add(sLayer);
         pyramidLayers.push(sLayer);
 
@@ -1229,7 +1230,7 @@
         createLayerLabel('D-S', layerHeight, layerHeight/2, 5, layerData.s.color);
 
         // P层（平台层）
-        const pLayer = createPyramidLayer(3, 0, layerHeight, layerHeight * 2, layerData.p.color);
+        const pLayer = createPyramidLayer(1.67, 0, layerHeight, layerHeight * 2, layerData.p.color);
         scene.add(pLayer);
         pyramidLayers.push(pLayer);
 
