@@ -157,6 +157,204 @@
             z-index: -1;
         }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --primary: #2563eb;
+            --primary-light: #3b82f6;
+            --primary-dark: #1d4ed8;
+            --secondary: #8b5cf6;
+            --accent: #06b6d4;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+            color: #1f2937;
+            overflow-x: hidden;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .card::before {
+            content: "";
+            position: absolute;
+            top: -100%;
+            left: -100%;
+            width: 300%;
+            height: 300%;
+            background: radial-gradient(circle, rgba(59,130,246,0.05) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        #pyramid-container {
+            width: 100%;
+            height: 400px;
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f0f7ff 0%, #e6f7ff 100%);
+            border: 1px solid rgba(37, 99, 235, 0.1);
+            box-shadow: inset 0 0 20px rgba(37, 99, 235, 0.1);
+        }
+
+        #pyramid-canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .layer-info {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%) translateX(-20px);
+            width: 250px;
+            max-width: 40%;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            padding: 15px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            opacity: 0;
+            transition: all 0.4s ease;
+            z-index: 10;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .layer-info.active {
+            transform: translateY(-50%) translateX(0);
+            opacity: 1;
+        }
+
+        /* 调整图例位置避免重叠 */
+        .pyramid-legend {
+            top: 15px;
+            right: 15px;
+            left: auto;
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 900px) {
+            .layer-info {
+                top: auto;
+                bottom: 20px;
+                left: 20px;
+                right: 20px;
+                transform: translateY(20px);
+                width: auto;
+                max-width: none;
+            }
+
+            .layer-info.active {
+                transform: translateY(0);
+            }
+        }
+
+        .pyramid-controls {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .control-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(37, 99, 235, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .control-btn:hover {
+            background: white;
+            transform: scale(1.1);
+        }
+
+        .pyramid-legend {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            left: auto;
+            top: auto;
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 8px 12px;
+            border-radius: 20px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(37, 99, 235, 0.1);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .b-layer { background-color: #3b82f6; }
+        .s-layer { background-color: #10b981; }
+        .p-layer { background-color: #f43f5e; }
+
+        .floating-animation {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+    </style>
 </head>
 <body>
 
@@ -166,7 +364,7 @@
         <div class="flex justify-between items-center">
             <div class="flex items-center space-x-3">
                 <div class="h-12 flex items-center">
-                    <img src="asset/logo.png" alt="Logo" class="h-14 object-contain">
+                    <img src="asset/image/logo.png" alt="Logo" class="h-14 object-contain">
                 </div>
             </div>
             <a href="https://jg.qust.edu.cn/bkjy/jxcgj.htm"
@@ -181,20 +379,19 @@
 
 <!-- Hero Section -->
 <section class="hero flex items-center justify-center text-center relative min-h-screen overflow-hidden bg-cover bg-center"
-         style="background-image: linear-gradient(rgba(17,118,248,0.87), rgba(104,119,252,0.16)), url('asset/listbanner.png');">
+         style="background-image: linear-gradient(rgba(17,118,248,0.87), rgba(104,119,252,0.16)), url('asset/image/listbanner.png');">
     <div class="absolute inset-0 bg-black/30 backdrop-blur-sm z-0"></div>
 
     <div class="max-w-6xl px-4 z-10" data-aos="zoom-in">
         <div class="inline-block bg-white/10 backdrop-blur-sm rounded-full px-6 py-2 mb-6 animate-pulse-slow">
-            <span class="text-blue-100 text-lg">“五维三阶”人才培养新范式</span>
+            <span class="text-blue-100 text-lg">人才培养新范式</span>
         </div>
         <h1 class="text-5xl md:text-7xl font-bold mb-6 leading-tight text-white">
-            <span class="inline-block animate-float" style="animation-delay: 0.2s;">面向未来</span>
-            <span class="inline-block animate-float" style="animation-delay: 0.4s;">数智融合</span>
-            <span class="inline-block animate-float" style="animation-delay: 0.6s;">重塑人才</span>
+            <span class="inline-block animate-float" style="animation-delay: 0.2s;">五维三阶</span>
+            <span class="inline-block animate-float" style="animation-delay: 0.4s;">多元融通</span>
         </h1>
         <p class="text-xl md:text-2xl text-blue-100 max-w-3xl mx-auto leading-relaxed">
-            聚焦数字经济时代需求，打造“V-D-B-S-P”能力模型与五维一体培养机制，系统推进商科管理教育高质量转型。
+            聚焦数字经济时代需求，打造“V-D-B-S-P”能力模型，系统推进新商科管理教育高质量转型。
         </p>
         <div class="mt-10">
             <a href="#achievements" class="inline-flex items-center px-8 py-3.5 bg-white text-blue-600 rounded-full text-lg font-medium hover:bg-blue-50 transition-all shadow-lg">
@@ -228,14 +425,18 @@
                 <p class="text-gray-600 leading-relaxed text-lg mb-6">
                     教学成果围绕“立德树人”根本任务，构建了基于“V-D-B-S-P”三阶能力模型的管理人才培养体系，覆盖从基础技能到综合素养的全面能力升级。在此基础上，形成面向企业真实需求、可持续改进的培养机制，有效解决了传统培养中数字素养薄弱、能力结构脱节等难题。
                 </p>
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-3 gap-4">
                     <div class="bg-blue-50 rounded-xl p-5">
-                        <div class="text-2xl font-bold text-blue-600 mb-2">2020</div>
+                        <div class="text-2xl font-bold text-blue-600 mb-2">2017</div>
                         <div class="text-gray-600">改革启动年</div>
                     </div>
                     <div class="bg-blue-50 rounded-xl p-5">
-                        <div class="text-2xl font-bold text-blue-600 mb-2">30+</div>
-                        <div class="text-gray-600">企业深度合作</div>
+                        <div class="text-2xl font-bold text-blue-600 mb-2">4 年</div>
+                        <div class="text-gray-600">实践检验期</div>
+                    </div>
+                    <div class="bg-blue-50 rounded-xl p-5">
+                        <div class="text-2xl font-bold text-blue-600 mb-2">2021</div>
+                        <div class="text-gray-600">成果完成年</div>
                     </div>
                 </div>
             </div>
@@ -252,7 +453,7 @@
                             <i class="fas fa-cubes w-full h-full flex items-center justify-center"></i>
                         </div>
                         <div class="ml-4">
-                            <h3 class="text-xl font-semibold mb-3">能力导向模型</h3>
+                            <h3 class="text-xl font-semibold mb-3">“三阶能力”新模型</h3>
                             <p class="text-gray-600">构建“V-D-B-S-P”三阶能力模型，系统划分基础、专业与综合能力，精准匹配数字化转型岗位需求。</p>
                         </div>
                     </div>
@@ -261,8 +462,8 @@
                             <i class="fas fa-layer-group w-full h-full flex items-center justify-center"></i>
                         </div>
                         <div class="ml-4">
-                            <h3 class="text-xl font-semibold mb-3">五维一体融合</h3>
-                            <p class="text-gray-600">打造课程、教师、资源、课堂、实践“五维一体”融合路径，实现从理念到执行的闭环人才培养机制。</p>
+                            <h3 class="text-xl font-semibold mb-3">“五维一体”新体系</h3>
+                            <p class="text-gray-600">打造课程、教师、资源、课堂、实践“五维一体”融合体系，实现从理念到执行的闭环人才培养机制。</p>
                         </div>
                     </div>
                     <div class="flex items-start">
@@ -270,25 +471,131 @@
                             <i class="fas fa-project-diagram w-full h-full flex items-center justify-center"></i>
                         </div>
                         <div class="ml-4">
-                            <h3 class="text-xl font-semibold mb-3">多元协同机制</h3>
-                            <p class="text-gray-600">实现学科、产教、师资、技术等多元资源高效协同，形成校企协同、国际对接、评价闭环的现代人才体系。</p>
+                            <h3 class="text-xl font-semibold mb-3">“多元融通”新路径</h3>
+                            <p class="text-gray-600">实现学科、产教、师资、技术等多元资源高效协同，打破学科界限、产业界限和技术界限，通过融通发展、持续改进新机制实现新商科人才培养目标。</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <div class="mt-16 card p-8" data-aos="fade-left">
+        <h2 class="text-3xl font-bold text-blue-600 mb-6">三阶能力模型三维结构</h2>
+        <div id="pyramid-container">
+            <canvas id="pyramid-canvas"></canvas>
+            <div class="pyramid-legend">
+                <div class="legend-item">
+                    <div class="legend-color b-layer"></div>
+                    <span>D-B层 - 数字化基础能力</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color s-layer"></div>
+                    <span>D-S层 - 数字化专业能力</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color p-layer"></div>
+                    <span>D-P层 - 数字化综合能力</span>
+                </div>
+            </div>
+            <div class="pyramid-controls">
+                <div class="control-btn" id="reset-view">
+                    <i class="fas fa-sync-alt text-blue-600"></i>
+                </div>
+                <div class="control-btn" id="auto-rotate">
+                    <i class="fas fa-rotate text-blue-600"></i>
+                </div>
+            </div>
+            <div class="layer-info" id="layer-info">
+                <div class="font-semibold text-lg mb-1" id="layer-title">点击金字塔层级查看详情</div>
+                <div class="text-sm text-gray-600" id="layer-description">B层、S层或P层</div>
+            </div>
+        </div>
+        <div class="mt-6 text-gray-600 text-sm">
+            <p>成果面向数字经济新需求，在传统“B-S-P”三阶能力模型基础上（曾获第八届省教学成果二等奖），拓展“D-数字化”新维度（共24项数字化管理能力），确立“V-价值引领”核心中轴，构建起“V-D-B-S-P”数字经济时代三阶能力新模型。</p>
+        </div>
+    </div>
+
+    <!-- 兄弟院校经验推广交流 -->
+    <div class="mt-16 card p-8" data-aos="fade-up">
+        <h2 class="text-3xl font-bold text-blue-600 mb-6">兄弟院校经验推广交流</h2>
+        <p class="text-gray-600 leading-relaxed text-lg mb-8">
+            为推动教学成果更广泛应用，项目团队积极与兄弟院校开展深度交流与经验共享。
+        </p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- 图片1 -->
+            <div class="rounded-xl overflow-hidden shadow-md">
+                <div class="w-full h-64">
+                    <img src="asset/image/图片1.jpg" alt="交流图片1" class="w-full h-full object-cover">
+                </div>
+            </div>
+
+            <!-- 图片2 -->
+            <div class="rounded-xl overflow-hidden shadow-md">
+                <div class="w-full h-64">
+                    <img src="asset/image/图片2.jpg" alt="交流图片2" class="w-full h-full object-cover">
+                </div>
+            </div>
+
+            <!-- 图片3 -->
+            <div class="rounded-xl overflow-hidden shadow-md">
+                <div class="w-full h-64">
+                    <img src="asset/image/图片3.png" alt="交流图片3" class="w-full h-full object-cover">
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <section class="max-w-7xl mx-auto px-4 py-20 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl my-20"  id="achievements">
         <div class="text-center mb-16" data-aos="fade-up">
-            <h2 class="section-title text-3xl md:text-4xl font-bold text-gray-800">成果评价材料</h2>
+            <h2 class="section-title text-3xl md:text-4xl font-bold text-gray-800">教学成果应用及效果证明材料</h2>
             <p class="text-gray-600 max-w-2xl mx-auto mt-4 text-lg">
                 来自多方的评价证明及研究成果充分印证了本成果的创新价值与推广意义。点击文档以查看详情
             </p>
         </div>
 
-        <div class="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
+        <!-- 媒体报道 Section -->
+        <section class="mt-16">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-10" data-aos="fade-up">
+                    <h3 class="text-3xl font-bold text-gray-800">媒体报道</h3>
+                    <p class="mt-2 text-gray-600">以下是主流媒体对本成果的报道页面预览</p>
+                </div>
 
+                <!-- 媒体卡片 1 -->
+                <div class="card overflow-hidden mb-10" data-aos="fade-up">
+                    <div class="p-6 border-b text-lg font-semibold text-gray-700 bg-white">
+                        中国教育报报道：聚焦数字化转型，培养新商科管理人才
+                    </div>
+                    <iframe
+                            src="https://share.app3.jyb.cn/paper_d/82cd1c7fd8621901085fbbd9d582140e?from=VjZDc29lWmRlREZnUWRtcXVVam1CRDJxSjhMTzdSaytYSnVqN3hNbGl4UHA2QjlXSXM2aG5TNWJSQ3ZGckdkUw=="
+                            class="w-full h-[600px] border-0 z-50 relative"
+                            style="z-index: 50; position: relative;"
+                            loading="lazy"
+                            allowfullscreen></iframe>
+                </div>
+
+                <!-- 媒体卡片 2 -->
+                <div class="card overflow-hidden mb-10" data-aos="fade-up">
+                    <div class="p-6 border-b text-lg font-semibold text-gray-700 bg-white">
+                        齐鲁网报道
+                    </div>
+                    <iframe
+                            src="https://news.iqilu.com/yangmei/20250409/5798288.shtml"
+                            class="w-full h-[600px] border-0 z-50 relative"
+                            style="z-index: 50; position: relative;"
+                            loading="lazy"
+                            allowfullscreen></iframe>
+                </div>
+
+                <!-- 如有更多媒体报道继续添加 -->
+            </div>
+        </section>
+        <div class="text-center mb-10" data-aos="fade-up">
+            <h3 class="text-3xl font-bold text-gray-800">相关文件材料</h3>
+            <p class="mt-2 text-gray-600">以下是各类相关文件材料</p>
+        </div>
+        <div class="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
             <!-- 教学成果总结报告 -->
             <div class="break-inside-avoid card" data-aos="fade-up" data-aos-delay="200">
                 <div class="p-8">
@@ -633,44 +940,6 @@
         <section class="mt-16">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-10">
-                    <h3 class="text-3xl font-bold text-gray-800">媒体报道</h3>
-                    <p class="mt-2 text-gray-600">以下是主流媒体对本成果的报道页面预览</p>
-                </div>
-
-                <!-- 媒体卡片 1 -->
-                <div class="card overflow-hidden mb-10">
-                    <div class="p-6 border-b text-lg font-semibold text-gray-700 bg-white">
-                        中国教育报报道：聚焦数字化转型，培养新商科管理人才
-                    </div>
-                    <iframe
-                            src="https://share.app3.jyb.cn/paper_d/82cd1c7fd8621901085fbbd9d582140e?from=VjZDc29lWmRlREZnUWRtcXVVam1CRDJxSjhMTzdSaytYSnVqN3hNbGl4UHA2QjlXSXM2aG5TNWJSQ3ZGckdkUw=="
-                            class="w-full h-[600px] border-0 z-50 relative"
-                            style="z-index: 50; position: relative;"
-                            loading="lazy"
-                            allowfullscreen></iframe>
-                </div>
-
-                <!-- 媒体卡片 2 -->
-                <div class="card overflow-hidden mb-10">
-                    <div class="p-6 border-b text-lg font-semibold text-gray-700 bg-white">
-                        齐鲁网报道
-                    </div>
-                    <iframe
-                            src="https://news.iqilu.com/yangmei/20250409/5798288.shtml"
-                            class="w-full h-[600px] border-0 z-50 relative"
-                            style="z-index: 50; position: relative;"
-                            loading="lazy"
-                            allowfullscreen></iframe>
-                </div>
-
-                <!-- 如有更多媒体报道继续添加 -->
-            </div>
-        </section>
-
-        <!-- 媒体报道 Section -->
-        <section class="mt-16">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="text-center mb-10">
                     <h3 class="text-3xl font-bold text-gray-800">获奖证书等其它支撑材料</h3>
                     <p class="mt-2 text-gray-600">以下是获奖证书等其它支撑材料</p>
                 </div>
@@ -845,5 +1114,494 @@
 
 
 </script>
+<script>
+    // 金字塔模型初始化
+    let scene, camera, renderer, controls;
+    let pyramidLayers = [];
+    let vAxis = null;
+    let raycaster = new THREE.Raycaster();
+    let mouse = new THREE.Vector2();
+    let autoRotate = false;
+    let currentFloatingLayer = null;
+
+    // 层信息数据
+    const layerData = {
+        v: {
+            title: "V轴 - 价值引领",
+            description: "贯穿整个金字塔的中心轴，代表价值导向和道德伦理，是所有能力的基础。确保所有层级的发展都符合核心价值观和道德标准。",
+            color: 0x8b5cf6
+        },
+        b: {
+            title: "D-B层 - 数字化基础能力",
+            description: "支撑性能力，是管理人才的底层能力基础。包括：表达沟通能力、信息搜集能力、办公软件操作能力、 公文撰写能力、基本外语能力、调查研究能力、 团队合作能力、环境适应和抗压能力、知识学习能力、 数据查询与获取、数据可视化、平台软件应用、媒体写作、远程协作、大数据分析工具等能力。",
+            color: 0x3b82f6
+        },
+        s: {
+            title: "D-S层 - 数字化专业能力",
+            description: "管理专业能力，贴近企业真实运营过程的核心技能支撑。包括：人力资源管理能力、财务报表编制和审阅能力、市场营销能力、商务谈判能力、项目策划与投资分析能力、商务英语能力、经济分析与预测能力、生产运作规划能力、组织与流程设计能力、战略规划分析能力、国际贸易与证券投资实务操作能力、管理信息系统操作与开发能力、 大数据人力资源管理能力、客户画像分析与分级管理能力、数字化生产组织运营能力、远程虚拟团队管理能力、新媒体运营能力、商业建模与分析能力、金融数据分析能力、平台组织与流程建设能力、平台运营数据分析能力、数字化营销与品牌策划能力、商业模式创新能力等。",
+            color: 0x10b981
+        },
+        p: {
+            title: "D-P层 - 数字化综合能力",
+            description: "综合性战略领导能力，是管理者高阶治理与组织统筹的能力体现。 包括：创业能力、变革与创新能力、战略思考能力、领导组织能力、决策应变能力、数字化洞察能力、数字化思维能力、数字化领导能力等。",
+            color: 0xf43f5e
+        }
+    };
+
+    function initPyramid() {
+        // 创建场景
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xf0f7ff);
+        scene.fog = new THREE.Fog(0x0f172a, 20, 100);
+
+        // 创建相机
+        camera = new THREE.PerspectiveCamera(45, document.getElementById('pyramid-container').offsetWidth / 500, 0.1, 1000);
+        camera.position.set(0, 4, 17);
+
+        // 创建渲染器
+        renderer = new THREE.WebGLRenderer({
+            canvas: document.getElementById('pyramid-canvas'),
+            antialias: true,
+            alpha: true
+        });
+        renderer.setSize(document.getElementById('pyramid-container').offsetWidth, 600);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.shadowMap.enabled = true;
+
+        // 添加灯光
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambientLight);
+
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+        directionalLight.position.set(5, 10, 7);
+        directionalLight.castShadow = true;
+        scene.add(directionalLight);
+
+        // 创建金字塔层和中心轴
+        createPyramidLayers();
+
+        // 添加轨道控制器
+        controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.autoRotate = false;
+
+        // 添加网格平面
+        const gridHelper = new THREE.GridHelper(20, 20, 0xcccccc, 0xeeeeee);
+        gridHelper.position.y = -0.5;
+        scene.add(gridHelper);
+
+        // 添加事件监听器
+        window.addEventListener('resize', onWindowResize);
+        renderer.domElement.addEventListener('mousemove', onMouseMove);
+        renderer.domElement.addEventListener('click', onMouseClick);
+
+        // 设置UI控制
+        document.getElementById('reset-view').addEventListener('click', resetView);
+        document.getElementById('auto-rotate').addEventListener('click', toggleAutoRotate);
+
+        // 开始动画循环
+        animate();
+    }
+
+    function createPyramidLayers() {
+        // 创建三层金字塔
+        const layerHeight = 1.5;
+
+        // 创建中心轴 (V轴)
+        vAxis = createCenterAxis();
+        scene.add(vAxis);
+
+        // B层（基础层）
+        const bLayer = createPyramidLayer(5, 4.5, layerHeight, 0, layerData.b.color);
+        scene.add(bLayer);
+        pyramidLayers.push(bLayer);
+
+        // 在金字塔右侧添加B标记
+        createLayerLabel('D-B', 0, layerHeight/2, 5, layerData.b.color);
+
+        // S层（服务层）
+        const sLayer = createPyramidLayer(4.5, 3, layerHeight, layerHeight, layerData.s.color);
+        scene.add(sLayer);
+        pyramidLayers.push(sLayer);
+
+        // 在金字塔右侧添加S标记
+        createLayerLabel('D-S', layerHeight, layerHeight/2, 5, layerData.s.color);
+
+        // P层（平台层）
+        const pLayer = createPyramidLayer(3, 0, layerHeight, layerHeight * 2, layerData.p.color);
+        scene.add(pLayer);
+        pyramidLayers.push(pLayer);
+
+        // 在金字塔右侧添加P标记
+        createLayerLabel('D-P', layerHeight * 2, layerHeight/2, 5, layerData.p.color);
+    }
+
+    // 创建中心轴 (V轴)
+    function createCenterAxis() {
+        // 轴的高度为三层金字塔的总高度
+        const axisHeight = 1.5 * 3 + 0.5;
+
+        // 创建轴几何体（细圆柱）
+        const axisGeometry = new THREE.CylinderGeometry(0.15, 0.15, axisHeight, 16);
+        const axisMaterial = new THREE.MeshPhongMaterial({
+            color: layerData.v.color,
+            shininess: 80,
+            emissive: 0x4a1fc6,
+            emissiveIntensity: 0.3
+        });
+
+        // 创建轴网格
+        const axis = new THREE.Mesh(axisGeometry, axisMaterial);
+        axis.position.y = axisHeight / 2 - 0.75; // 调整位置使其从底部开始
+        axis.castShadow = true;
+        axis.userData = {
+            type: 'v',
+            originalY: axis.position.y,
+            floating: false
+        };
+
+        // 创建轴顶端的"V"标记
+        createAxisLabel('V', axisHeight - 0.3);
+
+        return axis;
+    }
+
+    // 创建轴标签（V标记）
+    function createAxisLabel(text) {
+        // 创建2D canvas绘制文本
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        canvas.width = 256;
+        canvas.height = 256;
+
+        // 设置文本样式
+        context.fillStyle = '#575757';
+        context.font = 'Bold 200px Arial';
+        context.textAlign = 'center';
+        context.textBaseline = 'middle';
+        context.fillText(text, canvas.width/2, canvas.height/2);
+
+        // 创建纹理
+        const texture = new THREE.CanvasTexture(canvas);
+
+        // 创建精灵材质
+        const material = new THREE.SpriteMaterial({
+            map: texture,
+            transparent: true,
+            color: 0xffffff
+        });
+
+        // 创建精灵
+        const sprite = new THREE.Sprite(material);
+        sprite.position.set(0, 4.8, 0);
+        sprite.scale.set(2, 2, 1);
+
+        scene.add(sprite);
+    }
+
+    // 创建层级标签（B, S, P标记）
+    function createLayerLabel(text, yPos, offsetY, xPos, color) {
+        // 创建2D canvas绘制文本
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+
+        // 根据文本长度动态调整画布大小
+        const textLength = text.length;
+        const baseSize = 256;
+        canvas.width = baseSize * (0.5 + textLength * 0.25);
+        canvas.height = baseSize;
+
+        // 设置文本样式 - 根据文本长度调整字体大小
+        const fontSize = Math.min(160, 200 - (textLength - 1) * 30);
+        context.fillStyle = '#ffffff';
+        context.font = `Bold ${fontSize}px Arial`;
+        context.textAlign = 'center';
+        context.textBaseline = 'middle';
+
+        // 测量文本宽度
+        const textWidth = context.measureText(text).width;
+        const padding = 40; // 增加内边距以适应多个字母
+
+        // 添加背景圆形或圆角矩形
+        context.beginPath();
+
+        // 对于单个字母使用圆形，多个字母使用圆角矩形
+        if (textLength <= 1) {
+            // 圆形背景
+            const radius = Math.max(100, textWidth / 2 + padding);
+            context.arc(canvas.width/2, canvas.height/2, radius, 0, Math.PI * 2);
+        } else {
+            // 圆角矩形背景
+            const rectWidth = textWidth + padding * 2;
+            const rectHeight = fontSize + padding * 1.5;
+            const cornerRadius = rectHeight / 2;
+
+            context.moveTo(canvas.width/2 - rectWidth/2 + cornerRadius, canvas.height/2 - rectHeight/2);
+            context.arcTo(canvas.width/2 - rectWidth/2, canvas.height/2 - rectHeight/2,
+                canvas.width/2 - rectWidth/2, canvas.height/2 + rectHeight/2 - cornerRadius, cornerRadius);
+            context.arcTo(canvas.width/2 - rectWidth/2, canvas.height/2 + rectHeight/2,
+                canvas.width/2 - rectWidth/2 + cornerRadius, canvas.height/2 + rectHeight/2, cornerRadius);
+            context.arcTo(canvas.width/2 + rectWidth/2, canvas.height/2 + rectHeight/2,
+                canvas.width/2 + rectWidth/2, canvas.height/2 + rectHeight/2 - cornerRadius, cornerRadius);
+            context.arcTo(canvas.width/2 + rectWidth/2, canvas.height/2 - rectHeight/2,
+                canvas.width/2 + rectWidth/2 - cornerRadius, canvas.height/2 - rectHeight/2, cornerRadius);
+            context.closePath();
+        }
+
+        // 填充背景
+        context.fillStyle = `rgb(${color >> 16}, ${(color >> 8) & 0xff}, ${color & 0xff})`;
+        context.fill();
+
+        // 绘制文本
+        context.globalCompositeOperation = 'source-over';
+        context.fillStyle = '#ffffff';
+        context.fillText(text, canvas.width/2, canvas.height/2);
+
+        // 创建纹理
+        const texture = new THREE.CanvasTexture(canvas);
+
+        // 创建精灵材质
+        const material = new THREE.SpriteMaterial({
+            map: texture,
+            transparent: true
+        });
+
+        // 创建精灵
+        const sprite = new THREE.Sprite(material);
+        sprite.position.set(xPos, yPos + offsetY, 0.1);
+
+        // 根据文本长度调整精灵大小
+        const scaleFactor = textLength <= 1 ? 1.5 : 1.2 + (textLength * 0.1);
+        sprite.scale.set(scaleFactor, scaleFactor, 1);
+
+        scene.add(sprite);
+    }
+
+    function createPyramidLayer(bottomSize, topSize, height, yPos, color) {
+        // 创建金字塔段几何体
+        const geometry = new THREE.CylinderGeometry(
+            topSize,     // 顶部半径
+            bottomSize,  // 底部半径
+            height,      // 高度
+            4,           // 径向分段数（4边形成金字塔）
+            1,           // 高度分段数
+            false        // 是否开启顶盖
+        );
+
+
+        // 创建材质
+        const material = new THREE.MeshPhongMaterial({
+            color: color,
+            transparent: true,
+            opacity: 0.85,
+            shininess: 80,
+            side: THREE.DoubleSide
+        });
+
+        // 创建网格
+        const layer = new THREE.Mesh(geometry, material);
+        layer.position.y = yPos;
+        layer.castShadow = true;
+        layer.userData = {
+            originalY: yPos,
+            floating: false
+        };
+
+        // 添加边框
+        const edges = new THREE.EdgesGeometry(geometry);
+        const lineMaterial = new THREE.LineBasicMaterial({
+            color: 0xffffff,
+            linewidth: 1.5,
+            transparent: true,
+            opacity: 0.8
+        });
+        const wireframe = new THREE.LineSegments(edges, lineMaterial);
+        layer.add(wireframe);
+
+        return layer;
+    }
+
+    function onWindowResize() {
+        camera.aspect = document.getElementById('pyramid-container').offsetWidth / 500;
+        camera.updateProjectionMatrix();
+        renderer.setSize(document.getElementById('pyramid-container').offsetWidth, 600);
+    }
+
+    function onMouseMove(event) {
+        // 计算鼠标位置
+        const rect = renderer.domElement.getBoundingClientRect();
+        mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+        mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+        // 更新射线投射器
+        raycaster.setFromCamera(mouse, camera);
+
+        // 检测对象包括金字塔层和V轴
+        const objects = [...pyramidLayers, vAxis];
+        const intersects = raycaster.intersectObjects(objects);
+
+        // 显示标签
+        const tag = document.getElementById('axis-label');
+        if (intersects.length > 0) {
+            const obj = intersects[0].object;
+            let text = "";
+
+            if (obj === vAxis) {
+                text = layerData.v.title;
+            } else {
+                const layerIndex = pyramidLayers.indexOf(obj);
+                if (layerIndex === 0) text = layerData.b.title;
+                else if (layerIndex === 1) text = layerData.s.title;
+                else if (layerIndex === 2) text = layerData.p.title;
+            }
+
+            tag.textContent = text;
+            tag.style.opacity = '1';
+            tag.style.left = `${event.clientX - rect.left + 15}px`;
+            tag.style.top = `${event.clientY - rect.top + 15}px`;
+        } else {
+            tag.style.opacity = '0';
+        }
+    }
+
+    function onMouseClick() {
+        // 更新射线投射器
+        raycaster.setFromCamera(mouse, camera);
+
+        // 检测对象包括金字塔层和V轴
+        const objects = [...pyramidLayers, vAxis];
+        const intersects = raycaster.intersectObjects(objects);
+
+        if (intersects.length > 0) {
+            const clickedObj = intersects[0].object;
+
+            // 停止当前浮动层
+            if (currentFloatingLayer && currentFloatingLayer !== clickedObj) {
+                currentFloatingLayer.userData.floating = false;
+                animateLayerToPosition(currentFloatingLayer, currentFloatingLayer.userData.originalY);
+            }
+
+            // 启动或停止浮动动画
+            clickedObj.userData.floating = !clickedObj.userData.floating;
+
+            if (clickedObj.userData.floating) {
+                currentFloatingLayer = clickedObj;
+            } else {
+                currentFloatingLayer = null;
+                animateLayerToPosition(clickedObj, clickedObj.userData.originalY);
+            }
+
+            // 显示层信息
+            showLayerInfo(clickedObj);
+        }
+    }
+
+    // 更新信息面板显示函数 - 添加动态位置调整
+    function showLayerInfo(obj) {
+        let info;
+
+        if (obj === vAxis) {
+            info = layerData.v;
+        } else {
+            const layerIndex = pyramidLayers.indexOf(obj);
+            if (layerIndex === 0) info = layerData.b;
+            else if (layerIndex === 1) info = layerData.s;
+            else if (layerIndex === 2) info = layerData.p;
+        }
+
+        const infoDiv = document.getElementById('layer-info');
+        document.getElementById('layer-title').textContent = info.title;
+        document.getElementById('layer-description').textContent = info.description;
+
+        // 动态调整高度避免超出容器
+        const containerHeight = document.getElementById('pyramid-container').offsetHeight;
+        infoDiv.style.maxHeight = `${containerHeight * 0.8}px`;
+        infoDiv.style.overflowY = 'auto';
+
+        infoDiv.classList.add('active');
+
+        // 5秒后自动隐藏信息
+        clearTimeout(window.infoTimeout);
+        window.infoTimeout = setTimeout(() => {
+            infoDiv.classList.remove('active');
+        }, 5000);
+    }
+
+    function resetView() {
+        controls.reset();
+        camera.position.set(0, 8, 15);
+    }
+
+    function toggleAutoRotate() {
+        autoRotate = !autoRotate;
+        controls.autoRotate = autoRotate;
+        controls.autoRotateSpeed = 0.8;
+        const btn = document.getElementById('auto-rotate');
+        if (autoRotate) {
+            btn.innerHTML = '<i class="fas fa-pause"></i>';
+        } else {
+            btn.innerHTML = '<i class="fas fa-rotate"></i>';
+        }
+    }
+
+    function animateFloatingLayer(layer) {
+        if (!layer.userData.floating) return;
+
+        // 计算浮动位置
+        const amplitude = 0.3;
+        const speed = 0.05;
+        const time = Date.now() * 0.001;
+
+        layer.position.y = layer.userData.originalY + Math.sin(time * 3) * amplitude;
+    }
+
+    function animateLayerToPosition(layer, targetY) {
+        const startY = layer.position.y;
+        const duration = 800; // 毫秒
+        const startTime = Date.now();
+
+        function animate() {
+            const elapsed = Date.now() - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+
+            // 使用缓动函数
+            const easeProgress = easeOutCubic(progress);
+            layer.position.y = startY + (targetY - startY) * easeProgress;
+
+            if (progress < 1) {
+                requestAnimationFrame(animate);
+            }
+        }
+
+        requestAnimationFrame(animate);
+    }
+
+    function easeOutCubic(x) {
+        return 1 - Math.pow(1 - x, 3);
+    }
+
+    function animate() {
+        requestAnimationFrame(animate);
+
+        // 浮动动画
+        pyramidLayers.forEach(layer => {
+            animateFloatingLayer(layer);
+        });
+
+        // V轴也可以浮动
+        if (vAxis.userData.floating) {
+            animateFloatingLayer(vAxis);
+        }
+
+        controls.update();
+        renderer.render(scene, camera);
+    }
+
+    // 初始化金字塔
+    window.addEventListener('load', initPyramid);
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
 </body>
 </html>
